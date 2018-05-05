@@ -28,6 +28,7 @@ namespace OC{
 	State::State(arma::vec state,double mu){
 		this -> state = state;
 		this -> mu = mu;
+
 	}
 
 	
@@ -41,6 +42,10 @@ namespace OC{
 
 	void State::set_mu(double mu){
 		this -> mu = mu;
+	}
+
+	double State::get_parameter() const{
+		return this -> get_a() * (1 - std::pow(this -> get_eccentricity(),2));
 	}
 
 	double State::f_from_ecc(const double & ecc,const double & e){
@@ -58,11 +63,6 @@ namespace OC{
 	}
 
 
-	double State::get_n() const{
-		return std::sqrt(this -> mu / std::pow(this -> get_a(),3));
-	}
-
-
 	double State::ecc_from_f(const double & f,const double & e){
 
 		double ecc = 2 * std::atan(std::sqrt((1 - e)/ (1 + e)) * std::tan(f/2));
@@ -77,9 +77,16 @@ namespace OC{
 		return ecc;
 	}
 
+
+
+	double State::get_n() const{
+		return std::sqrt(this -> mu / std::pow(std::abs(this -> get_a()),3));
+	}
+
+
 	double State::H_from_f(const double & f,const double & e){
 
-		return 2 * std::atan(std::sqrt( (e - 1) / (1 + e) ) * std::tan( f / 2 ));
+		return 2 * std::atanh(std::sqrt( (e - 1) / (1 + e) ) * std::tan( f / 2 ));
 	}
 
 	double State::f_from_H(const  double & H,const  double & e){
@@ -111,23 +118,41 @@ namespace OC{
 		bool converge = false;
 		double ecc = M;
 
+		if (pedantic){
+			std::cout << "Initial guess: " << ecc << std::endl;
+		}
+
 		while (!converge){
-			ecc = ecc - (State::M_from_ecc(ecc,e) - M)/(1 - e * std::cos(ecc));
-			if (pedantic) {
-				std::cout <<  "Eccentric anomaly: " <<  ecc << std::endl;
-			}
 
-			double error = std::abs(State::M_from_ecc(ecc,e) - M);
+			double max_decc = 1;
 
-			if (error < 1e-9){
-				converge = true;
+			double decc = (State::M_from_ecc(ecc,e) - M)/(1 - e * std::cos(ecc));
+			
+			int sign;
+			if (decc >= 0){
+				sign = 1;
 			}
 			else{
-				if (pedantic){
-					std::cout << "Residual: " <<  error << std::endl;
-				}
+				sign = -1;
 			}
+
+			decc =  sign * std::min(max_decc,std::abs(decc));
+
+
+			ecc = ecc - decc;
+			
+
+			double error = std::abs(State::M_from_ecc(ecc,e) - M);
+			if (pedantic) {
+				std::cout << "decc : " << decc<<  " , ecc : " <<  ecc << " , Residual : " <<  error << std::endl;
+			}
+
+			if (error < 1e-11){
+				converge = true;
+			}
+			
 		}
+
 		return ecc;
 
 	}
@@ -138,7 +163,10 @@ namespace OC{
 		bool converge = false;
 
 		double H = std::atan(M);
-
+		double damp = 1;
+		if (pedantic){
+			std::cout << "Initial guess: " << H << " from M : " << M <<  std::endl;
+		}
 		while (!converge){
 
 			double max_dH = 1;
@@ -153,26 +181,22 @@ namespace OC{
 				sign = -1;
 			}
 
-			dH = sign * std::min(max_dH,std::abs(dH));
+			dH = damp * sign * std::min(max_dH,std::abs(dH));
 
 			H = H - dH;
 
+			double error = std::abs(M - State::M_from_H(H,e));
+
 			if (pedantic){
-				std::cout <<  "H: " <<  H << std::endl;
+				std::cout << "dH : " << dH <<  " , H : " <<  H <<" , Residual : " << error << std::endl;
 			}
 
 
-			double error = std::abs(M - State::M_from_H(H,e));
-
-			if (error < 1e-9){
+			if (error < 1e-11){
 				converge = true;
 			}
 
-			else{
-				if (pedantic){
-					std::cout <<  "Residual: " <<  error << std::endl;
-				}
-			}
+			
 		}
 		return H;
 

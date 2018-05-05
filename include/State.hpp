@@ -46,12 +46,12 @@ namespace OC{
 
 		virtual double get_momentum() const = 0;
 		virtual double get_energy() const = 0;
-		virtual double get_parameter() const = 0;
 		virtual double get_a() const = 0;
 		virtual double get_eccentricity() const = 0;
 
 		arma::vec get_state() const;
 		double get_n() const;
+		double get_parameter() const;
 		double get_mu() const;
 		void set_mu(double mu);
 

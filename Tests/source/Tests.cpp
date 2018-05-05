@@ -29,12 +29,62 @@ namespace Tests{
 	void run_tests(int N){
 
 		Tests::test_H_from_M(N);
+		Tests::test_f_from_H(N);
+
 		Tests::test_ecc_from_M(N);
-		Tests::test_cart_to_kep_to_cart(N);
+		Tests::test_f_from_ecc(N);
+
 		Tests::test_cart_to_kep(N);
 		Tests::test_kep_to_cart(N);
+		Tests::test_cart_to_kep_to_cart(N);
 
 	}
+
+
+	void test_f_from_H(int N){
+
+		std::cout <<  "\n- Running test_f_from_H... \n";
+
+		arma::arma_rng::set_seed(N);
+
+		for (int i = 0; i < N; ++i){
+
+			arma::vec rands = arma::randu<arma::vec>(2);
+
+			double e = 3 * rands(0) + 1;
+			double H = 4 * arma::datum::pi * ( 0.5 - rands(1));
+
+			double error = std::abs( OC::State::H_from_f(OC::State::f_from_H(H,e),e) - H);
+			assert(error < 1e-8);
+		}
+
+		std::cout <<  "- test_f_from_H() passed" << std::endl;
+
+
+	}
+
+	void test_f_from_ecc(int N){
+
+		std::cout <<  "\n- Running test_f_from_ecc... \n";
+
+		arma::arma_rng::set_seed(N);
+
+		for (int i = 0; i < N; ++i){
+
+			arma::vec rands = arma::randu<arma::vec>(2);
+
+			double e = rands(0);
+			double f = 4 * arma::datum::pi * ( 0.5 - rands(1));
+
+			double error = std::abs( OC::State::f_from_ecc(OC::State::ecc_from_f(f,e),e) - f);
+			assert(error < 1e-8);
+		}
+
+		std::cout <<  "- test_f_from_ecc() passed" << std::endl;
+
+		
+	}
+
 
 
 	void test_H_from_M(int N){
@@ -47,11 +97,11 @@ namespace Tests{
 
 			arma::vec rands = arma::randu<arma::vec>(2);
 
-			double e = rands(0) + 1;
-			double M = arma::datum::pi * ( 0.5 - rands(1));
+			double e = 3 * rands(0) + 1;
+			double M = 2 * arma::datum::pi * ( 0.5 - rands(1));
 
 			double error = std::abs( OC::State::M_from_H(OC::State::H_from_M(M,e),e) - M);
-			assert(error < 5e-8);
+			assert(error < 1e-8);
 		}
 
 		std::cout <<  "- test_H_from_M() passed" << std::endl;
@@ -61,7 +111,6 @@ namespace Tests{
 
 
 	void test_ecc_from_M(int N){
-
 
 		std::cout <<  "\n- Running test_ecc_from_M... \n" ;
 		arma::arma_rng::set_seed(N);
@@ -74,12 +123,29 @@ namespace Tests{
 
 			double error = std::abs( OC::State::M_from_ecc(OC::State::ecc_from_M(M,e),e) - M);
 
-			assert(error < 5e-8);
+			assert(error < 1e-8);
 		}
 		std::cout << "- test_ecc_from_M() passed\n";
 
 	}
 
+	void test_ecc_from_f(int N){
+
+		std::cout <<  "\n- Running test_ecc_from_f... \n" ;
+		arma::arma_rng::set_seed(N);
+		for (int i = 0; i < N; ++i){
+
+			arma::vec rands = arma::randu<arma::vec>(2);
+
+			double e =rands(0);
+			double M =  2 * arma::datum::pi * rands(1);
+			double error = std::abs( OC::State::ecc_from_f(OC::State::f_from_ecc(M,e),e) - M);
+
+			assert(error < 1e-8);
+		}
+		std::cout << "- test_ecc_from_M() passed\n";
+
+	}
 
 	void test_cart_to_kep_to_cart(int N){
 
@@ -88,23 +154,20 @@ namespace Tests{
 		arma::arma_rng::set_seed(N);
 
 		for (int i = 0; i < N; ++i){
-
-			arma::vec rands = arma::randn<arma::vec>(1);
+			arma::vec rands = arma::randu<arma::vec>(2);
 			double dt = rands(0);
+			double mu = rands(1) + 1;
 			arma::vec rand_state = arma::randu<arma::vec>(6);
-		
 
-			OC::CartState cart(rand_state,1); 
+			OC::CartState cart(rand_state,mu); 
 
 			OC::KepState kep = cart.convert_to_kep(dt);
 
 			OC::CartState cart_from_kep = kep.convert_to_cart(dt);
 
-
 			double error = arma::norm(cart_from_kep.get_state() - cart.get_state())/arma::norm(cart.get_state());
-
-			assert(error < 1e-7);
-
+			
+			assert(error < 1e-8);
 		}
 		std::cout << "- test_cart_to_kep_to_cart() passed\n";
 
@@ -118,23 +181,26 @@ namespace Tests{
 
 		for (int i = 0; i < N; ++i){
 
-			
-			arma::vec rand_v = arma::randu<arma::vec>(1);
-			double dt = rand_v(0);
+			arma::vec rands = arma::randu<arma::vec>(2);
+			double dt = rands(0);
+			double mu = 1 + rands(1);
 
-			OC::CartState cart(arma::randu<arma::vec>(6),1);
-			OC::KepState kep = cart.convert_to_kep(0);
+			OC::CartState cart(arma::randu<arma::vec>(6),mu);
+			OC::KepState kep = cart.convert_to_kep(dt);
 
-			assert(std::abs(kep.get_radius(dt) - cart.get_radius())/kep.get_radius(0) < 5e-8);
+			double f = OC::State::f_from_M(kep.get_M0() + dt * kep.get_n(),kep.get_eccentricity());
 
-			double error_momentum_norm = abs(cart.get_momentum() - kep.get_momentum())/kep.get_momentum();
-			assert(error_momentum_norm < 5e-8);
+			double error_radius = std::abs(kep.get_radius(f) - cart.get_radius())/kep.get_radius(f);
+			assert(error_radius < 1e-8);
 
-			double error_v = std::abs(kep.get_speed(dt) - cart.get_speed()) / kep.get_speed(dt);
-			assert(error_v < 5e-8);
+			double error_momentum_norm = std::abs(cart.get_momentum() - kep.get_momentum())/kep.get_momentum();
+			assert(error_momentum_norm < 1e-8);
 
-			double error_energy = (kep.get_energy() - cart.get_energy()) ;
-			assert(error_energy < 5e-8);
+			double error_v = std::abs(kep.get_speed(f) - cart.get_speed()) / kep.get_speed(f);
+			assert(error_v < 1e-8);
+
+			double error_energy = std::abs(kep.get_energy() - cart.get_energy())/std::abs(cart.get_energy());
+			assert(error_energy < 1e-8);
 
 
 
@@ -151,7 +217,7 @@ namespace Tests{
 		for (int i = 0; i < N; ++i){
 
 			arma::vec kep_state_vec = arma::zeros<arma::vec>(6);
-			arma::vec rands = arma::randu<arma::vec>(7);
+			arma::vec rands = arma::randu<arma::vec>(8);
 
 			kep_state_vec(1) = 2 * rands(1);
 
@@ -169,103 +235,29 @@ namespace Tests{
 			kep_state_vec(5) = 10 * (0.5 - rands(5));
 
 			double dt = rands(6);
+			double mu = 1 + rands(7);
 
-			OC::KepState kep(kep_state_vec,1);
+			OC::KepState kep(kep_state_vec,mu);
 
 			OC::CartState cart = kep.convert_to_cart(dt);
 
-			assert(std::abs(kep.get_radius(dt) - cart.get_radius() )< 5e-8);
+			double f = OC::State::f_from_M(kep.get_M0() + dt * kep.get_n(),kep.get_eccentricity());
+
+			assert(std::abs(kep.get_radius(f) - cart.get_radius() )< 1e-8);
 
 			double error_momentum_norm = std::abs(cart.get_momentum()- kep.get_momentum())/cart.get_momentum();
-			assert(error_momentum_norm < 5e-8);
+			assert(error_momentum_norm < 1e-8);
 
-			double error_v = std::abs(cart.get_speed()- kep.get_speed(dt))/kep.get_speed(dt);
-			assert(error_v < 5e-8);
+			double error_v = std::abs(cart.get_speed()- kep.get_speed(f))/kep.get_speed(f);
+			assert(error_v < 1e-8);
 
 			double error_energy = std::abs(cart.get_energy()- kep.get_energy())/kep.get_energy();
-			assert(error_energy < 5e-8);
+			assert(error_energy < 1e-8);
 		}
 
-		std::cout <<  "- test_cart_to_kep() passed\n";
+		std::cout <<  "- test_kep_to_cart() passed\n";
 
 	}
-
-
-
-
-	// void test_kep_to_cart_to_kep(N){
-	// 	std::cout << "\n- Running test_kep_to_cart_to_kep..." ;
-
-	// 	arma::arma_rng::set_seed(N);
-
-	// 	for (int i = 0; i < N; ++i){
-
-	// 		arma::vec kep_state_vec = arma::zeros<arma::vec>(6);
-	// 		arma::vec rands = arma::randu<arma::vec>(6);
-
-	// 		kep_state_vec(1) = 2 * rands(1);
-
-	// 		if (kep_state_vec(1) > 1){
-	// 			kep_state_vec(0) = - rands(0);
-	// 		}
-	// 		else{
-	// 			kep_state_vec(0) = rands(0);
-	// 		}
-
-	// 		kep_state_vec(2) = arma::datum::pi * rands(2);
-	// 		kep_state_vec(3) = 2 * arma::datum::pi * rands(3);
-
-	// 		kep_state_vec(4) = 2 * arma::datum::pi * rands(4);
-	// 		kep_state_vec(5) = 10 * (0.5 - rands(5));
-
-	// 		KepState kep_state(kep_state,1);
-	// 		CartState cart_from_kep = kep_state.convert_to_cart();
-	// 		KepState kep_from_cart = cart_from_kep.convert_to_kep();
-
-	// 		if kep[-1] < 0 and kep_from_cart[-1] > 0:
-	// 			kep_from_cart[-1] -= 2 * arma::datum::pi
-
-	// 		if kep[-2] < 0 and kep_from_cart[-2] > 0:
-	// 			kep_from_cart[-2] -= 2 * arma::datum::pi
-
-	// 		if kep[-3] < 0 and kep_from_cart[-3] > 0:
-	// 			kep_from_cart[-3] -= 2 * arma::datum::pi
-
-	// 		if kep[-1] > 0 and kep_from_cart[-1] < 0:
-	// 			kep_from_cart[-1] += 2 * arma::datum::pi
-
-	// 		if kep[-2] > 0 and kep_from_cart[-2] < 0:
-	// 			kep_from_cart[-2] += 2 * arma::datum::pi
-
-	// 		if kep[-3] > 0 and kep_from_cart[-3] < 0:
-	// 			kep_from_cart[-3] += 2 * arma::datum::pi
-
-	// 		error_vec = kep_from_cart - kep
-
-	// 		error = np.linalg.norm(error_vec)/np.linalg.norm(kep)
-
-
-	// 		assert(error < 5e-8)
-	// 	}
-	// 	print "- test_kep_to_cart_to_kep() passed"
-
-	// }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

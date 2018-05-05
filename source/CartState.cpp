@@ -59,9 +59,6 @@ namespace OC{
 		return std::pow(this -> get_speed(), 2) / 2 - this -> mu /(this -> get_radius());
 	}
 
-	double CartState::get_parameter() const{
-		return this -> get_a() * (1 - std::pow(this -> get_eccentricity(),2));
-	}
 
 	double CartState::get_a() const{
 		double energy = this -> get_energy();
@@ -115,6 +112,9 @@ namespace OC{
 
 		double f = std::acos(1./e * (p / this -> get_radius() - 1));
 
+
+
+
 		if (arma::dot(this -> get_position_vector(),this -> get_velocity_vector()) < 0){
 			f = 2 * arma::datum::pi - f;
 		}
@@ -134,9 +134,11 @@ namespace OC{
 			H = State::H_from_f(f,e);
 
 
+
         // mean anomaly
 			M = e * std::sinh(H) - H;
 		}
+
 
 
     // mean motion

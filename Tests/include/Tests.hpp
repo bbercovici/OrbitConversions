@@ -32,6 +32,10 @@ namespace Tests{
 	void test_cart_to_kep(int N);
 	void test_kep_to_cart(int N);
 
+	void test_f_from_H(int N);
+	void test_f_from_ecc(int N);
+
+
 
 }
 

@@ -28,29 +28,24 @@ namespace OC{
 	KepState::KepState( arma::vec state,double mu) : State(state,mu){
 	}
 
-	KepState::KepState() : State(arma::randu<arma::vec>(6),1){
+	KepState::KepState() : State(arma::zeros<arma::vec>(6),1){
 	}
 
 
 	double KepState::get_energy() const{
-		return this -> mu / (2 * this -> get_a());
+		return - this -> mu / (2 * this -> get_a());
 	}
 
 	double KepState::get_momentum() const{
 		return std::sqrt(this -> mu * this -> get_parameter());
 	}
 
-	double KepState::get_speed(double dt) const{
-		return std::sqrt(this -> mu * (2./(this -> get_radius(dt)) - 1./(this -> get_a())));
+	double KepState::get_speed(double f) const{
+		return std::sqrt(this -> mu * (2./(this -> get_radius(f)) - 1./(this -> get_a())));
 	}
 
-	double KepState::get_parameter() const{
-		return this -> get_a() * (1 - std::pow(this -> get_eccentricity(),2));
-	}
-
-	double KepState::get_radius(double dt) const{
-		double M = this -> get_M0() + this -> get_n() * dt;
-		return this -> get_parameter() / (1 + this -> get_eccentricity() * std::cos(State::f_from_M(M,this -> get_eccentricity())));
+	double KepState::get_radius(double f) const{
+		return this -> get_parameter() / (1 + this -> get_eccentricity() * std::cos(f));
 	}
 
 	double KepState::get_a() const{
@@ -82,7 +77,9 @@ namespace OC{
 
 		double M = this -> get_M0() + this -> get_n() * dt;
 		double f = State::f_from_M(M,this -> get_eccentricity());
-		double r = this -> get_radius(dt);
+		
+
+		double r = this -> get_radius(f);
 		double r_dot = this -> get_momentum() / this -> get_parameter() * this -> get_eccentricity() * std::sin(f);
 
 		arma::vec cartesian_state(6);

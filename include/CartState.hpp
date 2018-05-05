@@ -38,7 +38,6 @@ namespace OC{
 
 		virtual double get_momentum() const;
 		virtual double get_energy() const;
-		virtual double get_parameter() const;
 		virtual double get_a() const;
 		virtual double get_eccentricity() const;
 

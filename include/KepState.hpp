@@ -41,14 +41,13 @@ namespace OC{
 		virtual double get_a() const;
 		virtual double get_eccentricity() const;
 		virtual double get_momentum() const;
-		virtual double get_parameter() const;
 
 		double get_inclination() const;
 		double get_Omega() const;
 		double get_omega() const;
 		double get_M0() const;
-		double get_speed(double dt) const;
-		double get_radius(double dt) const;
+		double get_speed(double f) const;
+		double get_radius(double f) const;
 
 		/* 
 		Returns the cartesian state corresponding to the 
