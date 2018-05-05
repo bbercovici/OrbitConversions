@@ -68,7 +68,7 @@ find_package(RigidBodyKinematics REQUIRED PATHS ${RBK_LOC})
 include_directories(${RBK_INCLUDE_DIR})
 
 # Find OrbitConversions 
-find_package(OrbitConversions REQUIRED)
+find_package(OrbitConversions REQUIRED PATHS ${OC_LOC})
 include_directories(${OC_INCLUDE_DIR})
 
 # Add source files in root directory
