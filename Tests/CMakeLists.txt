@@ -34,6 +34,11 @@
 #
 ################################################################################
 
+if (EXISTS /home/bebe0705/.am_fortuna)
+	set(IS_FORTUNA ON)
+	message("-- This is Fortuna")
+	set(OC_LOC "/home/bebe0705/libs/local/lib/cmake/OrbitConversions")
+	set(RBK_LOC "/home/bebe0705/libs/local/lib/cmake/RigidBodyKinematics")
 
 # Building procedure
 get_filename_component(dirName ${CMAKE_CURRENT_SOURCE_DIR} NAME)
