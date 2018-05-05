@@ -92,22 +92,13 @@ namespace Tests{
 			arma::vec rands = arma::randn<arma::vec>(1);
 			double dt = rands(0);
 			arma::vec rand_state = arma::randu<arma::vec>(6);
-			OC::CartState cart_(rand_state,1); 
-			std::cout << "before returning\n";
-			std::cout << cart_.get_state() << std::endl;
-			std::cout << "after returning\n";
-
-			throw;
+		
 
 			OC::CartState cart(rand_state,1); 
 
-			std::cout << cart.get_state().t() << std::endl;
-
 			OC::KepState kep = cart.convert_to_kep(dt);
-			std::cout << kep.get_state().t() << std::endl;
 
 			OC::CartState cart_from_kep = kep.convert_to_cart(dt);
-			std::cout << cart_from_kep.get_state().t() << std::endl;
 
 
 			double error = arma::norm(cart_from_kep.get_state() - cart.get_state())/arma::norm(cart.get_state());
