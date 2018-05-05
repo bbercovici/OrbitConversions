@@ -25,6 +25,10 @@
 # @date   May, 2018
 # @brief  CMake listing enabling compilation and installation of the OrbitConversions library
 
+if (EXISTS /home/bebe0705/.am_fortuna)
+	set(IS_FORTUNA ON)
+	message("-- This is Fortuna")
+	set(RBK_LOC "/home/bebe0705/libs/local/lib/cmake/RigidBodyKinematics")
 
 cmake_minimum_required(VERSION 2.8)
 
