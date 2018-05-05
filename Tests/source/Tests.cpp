@@ -1,3 +1,25 @@
+// MIT License
+
+// Copyright (c) 2018 Benjamin Bercovici
+
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
 #include "Tests.hpp"
 #include <RigidBodyKinematics.hpp>
 #include <OrbitConversions.hpp>
@@ -28,7 +50,7 @@ namespace Tests{
 			double e = rands(0) + 1;
 			double M = arma::datum::pi * ( 0.5 - rands(1));
 
-			double error = std::abs( OC::M_from_H(OC::H_from_M(M,e),e) - M);
+			double error = std::abs( OC::State::M_from_H(OC::State::H_from_M(M,e),e) - M);
 			assert(error < 5e-8);
 		}
 
@@ -50,7 +72,7 @@ namespace Tests{
 			double e =rands(0);
 			double M =  2 * arma::datum::pi * rands(1);
 
-			double error = std::abs( OC::M_from_ecc(OC::ecc_from_M(M,e),e) - M);
+			double error = std::abs( OC::State::M_from_ecc(OC::State::ecc_from_M(M,e),e) - M);
 
 			assert(error < 5e-8);
 		}
@@ -67,11 +89,27 @@ namespace Tests{
 
 		for (int i = 0; i < N; ++i){
 
-			OC::CartState cart(arma::randu<arma::vec>(6),1); 
-			OC::KepState kep = cart.convert_to_kep(0);
-			OC::CartState cart_from_kep = kep.convert_to_cart(0);
+			arma::vec rands = arma::randn<arma::vec>(1);
+			double dt = rands(0);
+			arma::vec rand_state = arma::randu<arma::vec>(6);
+			OC::CartState cart_; 
+			
+			std::cout << cart_.get_state() << std::endl;
 
-			double error = arma::norm(cart_from_kep.get_state() - cart.get_state())/np.linalg.norm(cart.get_state());
+			throw;
+
+			OC::CartState cart(rand_state,1); 
+
+			std::cout << cart.get_state().t() << std::endl;
+
+			OC::KepState kep = cart.convert_to_kep(dt);
+			std::cout << kep.get_state().t() << std::endl;
+
+			OC::CartState cart_from_kep = kep.convert_to_cart(dt);
+			std::cout << cart_from_kep.get_state().t() << std::endl;
+
+
+			double error = arma::norm(cart_from_kep.get_state() - cart.get_state())/arma::norm(cart.get_state());
 
 			assert(error < 1e-7);
 
@@ -82,42 +120,30 @@ namespace Tests{
 
 
 	void  test_cart_to_kep(int N){
-		print "\n- Running test_cart_to_kep\n";
+		std::cout <<  "\n- Running test_cart_to_kep\n";
 
 		arma::arma_rng::set_seed(N);
 
 		for (int i = 0; i < N; ++i){
 
+			
+			arma::vec rand_v = arma::randu<arma::vec>(1);
+			double dt = rand_v(0);
+
 			OC::CartState cart(arma::randu<arma::vec>(6),1);
-			OC::KepState kep = cart.convert_to_kep();
+			OC::KepState kep = cart.convert_to_kep(0);
 
-			double f = OC::f_from_M(kep.get_M0(),kep.get_eccentricity()); // Assume dt = 0
-			double r_kep = kep.get_a() * ( 1- std::pow(kep.get_eccentricity(), 2)) / (1 + kep.get_eccentricity() * std::cos(f));
+			assert(std::abs(kep.get_radius(dt) - cart.get_radius())/kep.get_radius(0) < 5e-8);
 
-			assert(std::abs(r_kep - cart.get_radius())/r_kep < 5e-8);
+			double error_momentum_norm = abs(cart.get_momentum() - kep.get_momentum())/kep.get_momentum();
+			assert(error_momentum_norm < 5e-8);
 
-			double h_vector =  cart.get_momentum_vector();
-
-			double h =  cart.get_momentum();
-
-			double error_momentum_norm = abs(h - std::sqrt(kep.get_a() * ( 1- std::pow(kep.get_eccentricity(), 2))))/h;
-			assert(error_momentum_norm < 5e-8)
-
-			double v_norm_kep = std::sqrt(2./kep.get_radius() - 1./kep.get_a());
-			double error_v = std::abs(v_norm_kep - cart.get_speed()) / v_norm_kep;
+			double error_v = std::abs(kep.get_speed(dt) - cart.get_speed()) / kep.get_speed(dt);
 			assert(error_v < 5e-8);
 
 			double error_energy = (kep.get_energy() - cart.get_energy()) ;
 			assert(error_energy < 5e-8);
 
-			arma::vec h_dir_cart = h_vector / h;
-
-			arma::mat DCM_ON = RBK::M3(f + kep.get_omega()) * RBK::M1(kep.get_inclination()) * RBK::M3(kep.get_Omega());
-			arma::vec Z_vec = {0,0,1};
-			arma::vec h_dir_kep = DCM_ON.t() * Z_vec;
-
-			double error_h_dir = arma::norm(arma::cross(h_dir_kep,h_dir_cart));
-			assert(error_h_dir < 5e-8);
 
 
 		}
@@ -133,7 +159,7 @@ namespace Tests{
 		for (int i = 0; i < N; ++i){
 
 			arma::vec kep_state_vec = arma::zeros<arma::vec>(6);
-			arma::vec rands = arma::randu<arma::vec>(6);
+			arma::vec rands = arma::randu<arma::vec>(7);
 
 			kep_state_vec(1) = 2 * rands(1);
 
@@ -150,27 +176,21 @@ namespace Tests{
 			kep_state_vec(4) = 2 * arma::datum::pi * rands(4);
 			kep_state_vec(5) = 10 * (0.5 - rands(5));
 
-			KepState kep_state(kep_state,1);
+			double dt = rands(6);
 
-			CartState cart = kep_state.convert_to_cart();
+			OC::KepState kep(kep_state_vec,1);
 
-			double f = OC::f_from_M(kep_state.get_M0(),kep_state.get_eccentricity()); // Assume dt = 0
+			OC::CartState cart = kep.convert_to_cart(dt);
 
-			double r_kep = kep.get_radius();
+			assert(std::abs(kep.get_radius(dt) - cart.get_radius() )< 5e-8);
 
-			assert(std::abs(r_kep - cart.get_radius() )< 5e-8);
+			double error_momentum_norm = std::abs(cart.get_momentum()- kep.get_momentum())/cart.get_momentum();
+			assert(error_momentum_norm < 5e-8);
 
-
-			arma::vec h_vec_cart = cart.get_momentum_vector();
-			double h_cart = cart.get_momentum();
-
-			double error_momentum_norm = std::abs(cart.get_momentum()- kep.get_momentum());
-			assert(error_momentum_norm < 5e-8)
-
-			double error_v = std::abs(cart.get_speed()- kep.get_speed());
+			double error_v = std::abs(cart.get_speed()- kep.get_speed(dt))/kep.get_speed(dt);
 			assert(error_v < 5e-8);
 
-			double error_energy = std::abs(cart.get_energy()- kep.get_energy());
+			double error_energy = std::abs(cart.get_energy()- kep.get_energy())/kep.get_energy();
 			assert(error_energy < 5e-8);
 		}
 

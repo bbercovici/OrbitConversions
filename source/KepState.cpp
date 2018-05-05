@@ -1,11 +1,36 @@
+// MIT License
+
+// Copyright (c) 2018 Benjamin Bercovici
+
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
 #include "KepState.hpp"
 #include <RigidBodyKinematics.hpp>
 
+namespace OC{
 
-	KepState::KepState(arma::vec state,double mu) : State(state,mu){
+	KepState::KepState( arma::vec state,double mu) : State(state,mu){
 	}
 
-	KepState::KepState() : State(arma::zeros<arma::vec>(6),1){
+	KepState::KepState() : State(arma::randu<arma::vec>(6),1){
+
+		std::cout << this -> state.t() << std::endl;
 	}
 
 
@@ -27,7 +52,7 @@
 
 	double KepState::get_radius(double dt) const{
 		double M = this -> get_M0() + this -> get_n() * dt;
-		return this -> get_parameter() / (1 + this -> get_eccentricity() * std::cos(OC::f_from_M(M,this -> get_eccentricity())));
+		return this -> get_parameter() / (1 + this -> get_eccentricity() * std::cos(State::f_from_M(M,this -> get_eccentricity())));
 	}
 
 	double KepState::get_a() const{
@@ -55,4 +80,26 @@
 	}
 
 
-	
+	CartState KepState::convert_to_cart(double dt) const{
+
+		double M = this -> get_M0() + this -> get_n() * dt;
+		double f = State::f_from_M(M,this -> get_eccentricity());
+		double r = this -> get_radius(dt);
+		double r_dot = this -> get_momentum() / this -> get_parameter() * this -> get_eccentricity() * std::sin(f);
+
+		arma::vec cartesian_state(6);
+
+		arma::mat DCM_ON = RBK::M3(this -> get_omega()+ f) * RBK::M1(this -> get_inclination()) * RBK::M3(this -> get_Omega());
+		arma::vec angular_velocity = {0,0,this -> get_momentum() / std::pow(r, 2)};
+		arma::vec pos = {r,0,0};
+		arma::vec vel = {r_dot,0,0};
+
+		cartesian_state.subvec(0,2) = DCM_ON.t() * pos;
+		cartesian_state.subvec(3,5) = DCM_ON.t() *(vel + arma::cross(angular_velocity,pos));
+
+		return CartState(cartesian_state,this -> mu);
+
+
+	}
+
+}

@@ -52,17 +52,19 @@ add_library(${LIB_NAME} SHARED
 
 target_link_libraries(${LIB_NAME} ${ARMADILLO_LIBRARIES} ${RBK_LIBRARY})
 
+file(GLOB includes include/*.hpp)
+
 # Installing
 if(${IS_FORTUNA})
 
 	install (TARGETS ${LIB_NAME} DESTINATION /home/bebe0705/libs/local/lib)
-	install(DIRECTORIES include/ DESTINATION /home/bebe0705/libs/local/include/OrbitConversions/)
+	install(FILES ${includes} DESTINATION /home/bebe0705/libs/local/include/OrbitConversions)
 	install (FILES OrbitConversions/CMake/OrbitConversionsConfig.cmake DESTINATION /home/bebe0705/libs/local/lib/cmake/OrbitConversions/)
 
 else()
 	
 	install (TARGETS ${LIB_NAME} DESTINATION /usr/local/lib)
-	install(DIRECTORIES include/ DESTINATION /usr/local/include/OrbitConversions/)
+	install(FILES ${includes} DESTINATION /usr/local/include/OrbitConversions)
 	install (FILES OrbitConversions/CMake/OrbitConversionsConfig.cmake DESTINATION /usr/local/share/OrbitConversions/)
 
 endif()
