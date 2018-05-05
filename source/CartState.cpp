@@ -107,7 +107,7 @@ namespace OC{
 		arma::mat::fixed<3,3> ON = arma::zeros<arma::mat>(3,3);
 		ON.row(0) = ecc_vector.t() / e;
 		ON.row(1) = arma::cross(h_vector / h,ecc_vector / e).t();
-		ON.row(2) = h_vector / h;
+		ON.row(2) = h_vector.t() / h;
 
 		double Omega = std::atan2(ON(2,0),-ON(2,1));
 		double i = std::acos(ON(2,2));

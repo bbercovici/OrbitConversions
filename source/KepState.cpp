@@ -29,8 +29,6 @@ namespace OC{
 	}
 
 	KepState::KepState() : State(arma::randu<arma::vec>(6),1){
-
-		std::cout << this -> state.t() << std::endl;
 	}
 
 

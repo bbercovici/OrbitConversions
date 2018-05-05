@@ -92,9 +92,10 @@ namespace Tests{
 			arma::vec rands = arma::randn<arma::vec>(1);
 			double dt = rands(0);
 			arma::vec rand_state = arma::randu<arma::vec>(6);
-			OC::CartState cart_; 
-			
+			OC::CartState cart_(rand_state,1); 
+			std::cout << "before returning\n";
 			std::cout << cart_.get_state() << std::endl;
+			std::cout << "after returning\n";
 
 			throw;
 

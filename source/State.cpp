@@ -24,9 +24,22 @@
 #include <RigidBodyKinematics.hpp>
 
 namespace OC{
-	
+
 	State::State(arma::vec state,double mu){
 		this -> state = state;
+		this -> mu = mu;
+	}
+
+	
+	arma::vec State::get_state() const{
+		return this -> state;
+	}
+
+	double State::get_mu() const{
+		return this -> mu;
+	}
+
+	void State::set_mu(double mu){
 		this -> mu = mu;
 	}
 
@@ -95,7 +108,6 @@ namespace OC{
 
 	double State::ecc_from_M(const double & M,const double & e,const bool & pedantic){
 
-    // The eccentric anomaly is found
 		bool converge = false;
 		double ecc = M;
 
@@ -123,7 +135,6 @@ namespace OC{
 
 	double State::H_from_M(const  double & M,const  double & e,const bool & pedantic){
 
-    // The eccentric anomaly is found
 		bool converge = false;
 
 		double H = std::atan(M);
@@ -190,17 +201,5 @@ namespace OC{
 		}
 	}
 
-	arma::vec State::get_state() const{
-		std::cout << "returning " << this -> state.t() << std::endl;
-		return this -> state;
-	}
-
-	double State::get_mu() const{
-		return this -> mu;
-	}
-
-	void State::set_mu(double mu){
-		this -> mu = mu;
-	}
 
 }
