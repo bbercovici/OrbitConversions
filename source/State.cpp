@@ -24,8 +24,8 @@
 #include <RigidBodyKinematics.hpp>
 
 namespace OC{
+	
 	State::State(arma::vec state,double mu){
-
 		this -> state = state;
 		this -> mu = mu;
 	}
