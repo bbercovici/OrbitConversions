@@ -39,7 +39,7 @@ if (EXISTS /home/bebe0705/.am_fortuna)
 	message("-- This is Fortuna")
 	set(OC_LOC "/home/bebe0705/libs/local/lib/cmake/OrbitConversions")
 	set(RBK_LOC "/home/bebe0705/libs/local/lib/cmake/RigidBodyKinematics")
-
+endif()
 # Building procedure
 get_filename_component(dirName ${CMAKE_CURRENT_SOURCE_DIR} NAME)
 set(EXE_NAME ${dirName} CACHE STRING "Name of executable to be created.")
