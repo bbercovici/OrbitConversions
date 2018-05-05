@@ -19,8 +19,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
-
+if (EXISTS /home/bebe0705/.am_fortuna)
+set(OC_INCLUDE_DIR /home/bebe0705/libs/local/include/OrbitConversions)
+else()
 set(OC_INCLUDE_DIR /usr/local/include/OrbitConversions/)
+endif()
 
 if (APPLE)
 	set(OC_LIBRARY /usr/local/lib/libOrbitConversions.dylib)
