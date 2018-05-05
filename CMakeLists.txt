@@ -29,7 +29,7 @@ if (EXISTS /home/bebe0705/.am_fortuna)
 	set(IS_FORTUNA ON)
 	message("-- This is Fortuna")
 	set(RBK_LOC "/home/bebe0705/libs/local/lib/cmake/RigidBodyKinematics")
-
+endif()
 cmake_minimum_required(VERSION 2.8)
 
 set(LIB_NAME "OrbitConversions" CACHE STRING "Name of library to be created.")
