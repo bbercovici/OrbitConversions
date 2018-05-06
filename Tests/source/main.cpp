@@ -6,7 +6,7 @@
 
 int main(){
 
-	Tests::run_tests(1000);
+	Tests::run_tests(50000);
 
 	return 0;
 

@@ -119,12 +119,13 @@ namespace OC{
 		double ecc = M;
 
 		if (pedantic){
-			std::cout << "Initial guess: " << ecc << std::endl;
+			std::cout << "Initial guess: " << ecc << " from M : " << M <<  " , e: " << e << std::endl;
+
 		}
 
 		while (!converge){
 
-			double max_decc = 1;
+			double max_decc = 0.1;
 
 			double decc = (State::M_from_ecc(ecc,e) - M)/(1 - e * std::cos(ecc));
 			
@@ -138,16 +139,14 @@ namespace OC{
 
 			decc =  sign * std::min(max_decc,std::abs(decc));
 
-
 			ecc = ecc - decc;
-			
 
 			double error = std::abs(State::M_from_ecc(ecc,e) - M);
 			if (pedantic) {
 				std::cout << "decc : " << decc<<  " , ecc : " <<  ecc << " , Residual : " <<  error << std::endl;
 			}
 
-			if (error < 1e-11){
+			if (error < 1e-13 || std::abs(decc) < 1e-12){
 				converge = true;
 			}
 			
@@ -165,11 +164,11 @@ namespace OC{
 		double H = std::atan(M);
 		double damp = 1;
 		if (pedantic){
-			std::cout << "Initial guess: " << H << " from M : " << M <<  std::endl;
+			std::cout << "Initial guess: " << H << " from M : " << M <<  " , e: " << e << std::endl;
 		}
 		while (!converge){
 
-			double max_dH = 1;
+			double max_dH = 0.1;
 
 			double dH = (State::M_from_H(H,e) - M)/(e * std::cosh(H) - 1);
 
@@ -192,7 +191,7 @@ namespace OC{
 			}
 
 
-			if (error < 1e-11){
+			if (error < 1e-13 || std::abs(dH) < 1e-12){
 				converge = true;
 			}
 

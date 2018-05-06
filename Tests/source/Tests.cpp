@@ -157,9 +157,8 @@ namespace Tests{
 			arma::vec rands = arma::randu<arma::vec>(2);
 			double dt = rands(0);
 			double mu = rands(1) + 1;
-			arma::vec rand_state = arma::randu<arma::vec>(6);
 
-			OC::CartState cart(rand_state,mu); 
+			OC::CartState cart(arma::randn<arma::vec>(6),mu); 
 
 			OC::KepState kep = cart.convert_to_kep(dt);
 
@@ -167,7 +166,7 @@ namespace Tests{
 
 			double error = arma::norm(cart_from_kep.get_state() - cart.get_state())/arma::norm(cart.get_state());
 			
-			assert(error < 1e-8);
+			assert(error < 1e-7);
 		}
 		std::cout << "- test_cart_to_kep_to_cart() passed\n";
 
@@ -185,22 +184,22 @@ namespace Tests{
 			double dt = rands(0);
 			double mu = 1 + rands(1);
 
-			OC::CartState cart(arma::randu<arma::vec>(6),mu);
+			OC::CartState cart(arma::randn<arma::vec>(6),mu);
 			OC::KepState kep = cart.convert_to_kep(dt);
 
 			double f = OC::State::f_from_M(kep.get_M0() + dt * kep.get_n(),kep.get_eccentricity());
 
-			double error_radius = std::abs(kep.get_radius(f) - cart.get_radius())/kep.get_radius(f);
-			assert(error_radius < 1e-8);
+			double error_radius = std::abs(kep.get_radius(f) - cart.get_radius())/cart.get_radius();
+			assert(error_radius < 1e-7);
 
 			double error_momentum_norm = std::abs(cart.get_momentum() - kep.get_momentum())/kep.get_momentum();
-			assert(error_momentum_norm < 1e-8);
+			assert(error_momentum_norm < 1e-7);
 
 			double error_v = std::abs(kep.get_speed(f) - cart.get_speed()) / kep.get_speed(f);
-			assert(error_v < 1e-8);
+			assert(error_v < 1e-7);
 
 			double error_energy = std::abs(kep.get_energy() - cart.get_energy())/std::abs(cart.get_energy());
-			assert(error_energy < 1e-8);
+			assert(error_energy < 1e-7);
 
 
 
@@ -222,26 +221,27 @@ namespace Tests{
 			kep_state_vec(1) = 2 * rands(1);
 
 			if (kep_state_vec(1) > 1){
-				kep_state_vec(0) = - rands(0);
+				kep_state_vec(0) = - (rands(0) + 0.1);
 			}
 			else{
-				kep_state_vec(0) = rands(0);
+				kep_state_vec(0) = (rands(0) + 0.1);
 			}
 
 			kep_state_vec(2) = arma::datum::pi * rands(2);
 			kep_state_vec(3) = 2 * arma::datum::pi * rands(3);
 
 			kep_state_vec(4) = 2 * arma::datum::pi * rands(4);
-			kep_state_vec(5) = 10 * (0.5 - rands(5));
+			kep_state_vec(5) = 3 * (0.5 - rands(5));
 
 			double dt = rands(6);
 			double mu = 1 + rands(7);
 
 			OC::KepState kep(kep_state_vec,mu);
-
+			double M = kep.get_M0() + dt * kep.get_n();
+			
 			OC::CartState cart = kep.convert_to_cart(dt);
 
-			double f = OC::State::f_from_M(kep.get_M0() + dt * kep.get_n(),kep.get_eccentricity());
+			double f = OC::State::f_from_M(M,kep.get_eccentricity());
 
 			assert(std::abs(kep.get_radius(f) - cart.get_radius() )< 1e-8);
 
