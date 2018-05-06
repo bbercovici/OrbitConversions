@@ -38,8 +38,8 @@ namespace OC{
 		static double H_from_f(const double & f,const double & e);
 		static double f_from_H(const  double & H,const  double & e);
 		static double f_from_M(const double & M,const double & e);
-		static double ecc_from_M(const double & M,const double & e,const bool & pedantic = true);
-		static double H_from_M(const  double & M,const  double & e,const bool & pedantic = true);
+		static double ecc_from_M(const double & M,const double & e,const bool & pedantic = false);
+		static double H_from_M(const  double & M,const  double & e,const bool & pedantic = false);
 		static double M_from_ecc(const double & ecc,const double & e);
 		static double M_from_H(const double & H,const double & e);
 		static double M_from_f(const double & f,const double & e);
