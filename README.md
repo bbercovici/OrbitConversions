@@ -46,10 +46,10 @@ Remember that the classical Keplerian elements are singular at zero eccentricity
     double mu = 398600 ; 
     OC::CartState cart(cart_state_vec,mu);
     
-    double dt = 300; // what is the keplerian state 300 seconds since epoch?
+    double dt = 300; // what is the keplerian state given this cartesian state 300 seconds since the epoch?
     OC::KepState kep = cart.convert_to_kep(dt);
     std::cout << kep.get_state().t() << std::endl;
-    // cart.get_state() returns (7.0001e+03   6.0007e-02   5.0000e-01   4.0000e-01   4.0011e-01   5.7831e+00)
+    // kep.get_state() returns (7.0001e+03   6.0007e-02   5.0000e-01   4.0000e-01   4.0011e-01   5.7831e+00)
     
 
 ### From Keplerian coordinates to Cartesian elements
@@ -64,8 +64,6 @@ Remember that the classical Keplerian elements are singular at zero eccentricity
     OC::CartState cart = kep.convert_to_cart(dt);
     std::cout << cart.get_state().t() << std::endl;
     // cart.get_state() returns (5.4970e+03   3.5750e+03   6.2943e+02  -4.2249e+00   5.6701e+00   3.7519e+00)
-
-
 
 
 ## License
