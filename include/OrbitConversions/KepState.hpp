@@ -23,10 +23,8 @@
 #ifndef KEPSTATE_HEADER 
 #define KEPSTATE_HEADER
 
-#include "KepState.hpp"
-#include "CartState.hpp"
-
-
+#include "OrbitConversions/State.hpp"
+#include "OrbitConversions/CartState.hpp"
 
 namespace OC{
 

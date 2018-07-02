@@ -20,8 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "CartState.hpp"
-#include <RigidBodyKinematics.hpp>
+#include "OrbitConversions/CartState.hpp"
 
 namespace OC{
 

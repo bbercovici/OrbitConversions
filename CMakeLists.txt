@@ -74,6 +74,22 @@ add_library(${LIB_NAME}
 	source/KepState.cpp
 	)
 
+
+# Find Armadillo 
+find_package(Armadillo REQUIRED)
+include_directories(${ARMADILLO_INCLUDE_DIRS})
+
+# Find RBK 
+find_package(RigidBodyKinematics REQUIRED )
+include_directories(${RBK_INCLUDE_DIR})
+
+# Linking
+set(library_dependencies
+	${ARMADILLO_LIBRARIES}
+	${RBK_LIBRARY})
+target_link_libraries(${LIB_NAME} ${library_dependencies})
+
+
 # If ${BREW} is true, installing from homebrew formula
 if(NOT BREW)
 	install (TARGETS ${LIB_NAME} DESTINATION /usr/local/lib/)

@@ -1,7 +1,7 @@
 #ifndef ORBITCONVERSION_HEADER
 #define ORBITCONVERSION_HEADER
 
-#include "CartState.hpp"
-#include "KepState.hpp"
+#include "OrbitConversions/CartState.hpp"
+#include "OrbitConversions/KepState.hpp"
 
 #endif

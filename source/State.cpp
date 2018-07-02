@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "State.hpp"
+#include "OrbitConversions/State.hpp"
 #include <RigidBodyKinematics.hpp>
 
 namespace OC{
