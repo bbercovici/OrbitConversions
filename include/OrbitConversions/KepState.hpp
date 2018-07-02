@@ -32,6 +32,18 @@ namespace OC{
 	class KepState : public State{
 
 	public: 
+
+		/**
+		Constructor
+		@param state 6x1 vector of orbital elements ordered like so :
+		- sma : semi-major axis [L]
+		- e : eccentricity [-]
+		- i : inclination in [0,pi] [rad]
+		- Omega : right-ascension of ascending node in [0,2 pi] [rad] 
+		- omega : longitude of perigee [0,2 pi] [rad] 
+		- M0 : true anomaly at epoch [rad]
+		@param mu standard gravitational parameter of central body [L^3/T^2]
+		*/
 		KepState(arma::vec state,double mu);
 		KepState();
 
