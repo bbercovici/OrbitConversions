@@ -11,6 +11,16 @@ A collection of orbit conversion routines. For now, the following parametrizatio
 
 ## Installation: 
 
+### Mac users
+
+OrbitConversions can be retrieved from Homebrew:
+
+    brew tap bbercovici/self
+    brew update
+    brew install orbit-conversions
+
+### Unix users (Mac and Linux)
+
     git clone https://github.com/bbercovici/OrbitConversions.git
     cd OrbitConversions/build
     cmake ..

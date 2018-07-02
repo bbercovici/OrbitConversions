@@ -18,60 +18,75 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-#
+# 
 
 # @file   CMakeLists.txt
 # @Author Benjamin Bercovici (bebe0705@colorado.edu)
 # @date   May, 2018
 # @brief  CMake listing enabling compilation and installation of the OrbitConversions library
 
-if (EXISTS /home/bebe0705/.am_fortuna)
-	set(IS_FORTUNA ON)
-	message("-- This is Fortuna")
-	set(RBK_LOC "/home/bebe0705/libs/local/lib/cmake/RigidBodyKinematics")
-endif()
+################################################################################
+#
+#
+# 		The following should normally not require any modification
+# 				Unless new files are added to the build tree
+#
+#
+################################################################################
+
 cmake_minimum_required(VERSION 2.8)
 
+if (${USE_GCC})
+	include(cmake/FindOmpGcc.cmake)
+else()
+	set(CMAKE_C_COMPILER /usr/bin/gcc CACHE STRING "C Compiler" FORCE)
+	set(CMAKE_CXX_COMPILER /usr/bin/g++ CACHE STRING "C++ Compiler" FORCE)
+endif()
+
+get_filename_component(dirName ${CMAKE_CURRENT_SOURCE_DIR} NAME)
 set(LIB_NAME "OrbitConversions" CACHE STRING "Name of library to be created.")
 
+
 project(${LIB_NAME})
+
+# Specify the version used
+if (${CMAKE_MAJOR_VERSION} LESS 3)
+	message(FATAL_ERROR " You are running an outdated version of CMake")
+endif()
+
+cmake_minimum_required(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.0)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/source/cmake)
 
+# Compiler flags
 add_definitions(-Wall -O2 )
-set(CMAKE_CXX_FLAGS "-std=c++14")
 
-# Find Armadillo 
-find_package(Armadillo REQUIRED)
-include_directories(${ARMADILLO_INCLUDE_DIRS})
+# Enable C++17 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 
-# Find RBK 
-find_package(RigidBodyKinematics REQUIRED PATHS ${RBK_LOC})
-include_directories(${RBK_INCLUDE_DIR} )
+# Include directories
+include_directories(include)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
-add_library(${LIB_NAME} SHARED 
+# Add source files in root directory
+add_library(${LIB_NAME} 
+	SHARED
 	source/State.cpp
 	source/CartState.cpp
-	source/KepState.cpp)
+	source/KepState.cpp
+	)
 
-target_link_libraries(${LIB_NAME} ${ARMADILLO_LIBRARIES} ${RBK_LIBRARY})
-
-file(GLOB includes include/*.hpp)
-
-# Installing
-if(${IS_FORTUNA})
-
-	install (TARGETS ${LIB_NAME} DESTINATION /home/bebe0705/libs/local/lib)
-	install(FILES ${includes} DESTINATION /home/bebe0705/libs/local/include/OrbitConversions)
-	install (FILES OrbitConversions/CMake/OrbitConversionsConfig.cmake DESTINATION /home/bebe0705/libs/local/lib/cmake/OrbitConversions/)
-
-else()
-	
-	install (TARGETS ${LIB_NAME} DESTINATION /usr/local/lib)
-	install(FILES ${includes} DESTINATION /usr/local/include/OrbitConversions)
-	install (FILES OrbitConversions/CMake/OrbitConversionsConfig.cmake DESTINATION /usr/local/share/OrbitConversions/)
-
+# If ${BREW} is true, installing from homebrew formula
+if(NOT BREW)
+	install (TARGETS ${LIB_NAME} DESTINATION /usr/local/lib/)
+	install (DIRECTORY ${PROJECT_SOURCE_DIR}/share/${LIB_NAME} DESTINATION /usr/local/share)
+	install (DIRECTORY ${PROJECT_SOURCE_DIR}/include/OrbitConversions DESTINATION /usr/local/include/ FILES_MATCHING PATTERN "*.hpp")
 endif()
+
+
+
+
+
+
+
 
 
 
