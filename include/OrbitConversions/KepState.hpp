@@ -41,7 +41,7 @@ namespace OC{
 		- i : inclination in [0,pi] [rad]
 		- Omega : right-ascension of ascending node in [0,2 pi] [rad] 
 		- omega : longitude of perigee [0,2 pi] [rad] 
-		- M0 : true anomaly at epoch [rad]
+		- M0 : mean anomaly at epoch [rad]
 		@param mu standard gravitational parameter of central body [L^3/T^2]
 		*/
 		KepState(arma::vec state,double mu);
