@@ -49,7 +49,7 @@ Remember that the classical Keplerian elements are singular at zero eccentricity
     
     OC::CartState cart(cart_state_vec,mu);
     
-    double dt = 300; // what is the keplerian state given this cartesian state 300 seconds since the epoch?
+    double dt = 300; // what is the keplerian state given this cartesian state 300 seconds after the epoch?
     
     OC::KepState kep = cart.convert_to_kep(dt);
     
@@ -59,7 +59,8 @@ Remember that the classical Keplerian elements are singular at zero eccentricity
 
 ### From Keplerian coordinates to Cartesian elements
 
-    // Keplerian (elements sma, eccentricity, inclination, right-ascension of ascending node, longitude of perigee, true anomaly at epoch)
+
+    // Keplerian (elements sma, eccentricity, inclination, right-ascension of ascending node, longitude of perigee, mean anomaly at epoch)
     arma::vec kep_state_vec = {7000,0.06,0.5,0.4,0.4,-0.5};
     
     // Standard gravitational parameter of the earth (kg^3/s^2)
@@ -67,7 +68,8 @@ Remember that the classical Keplerian elements are singular at zero eccentricity
     
     OC::KepState kep(kep_state_vec,mu);
     
-    double dt = 300; // what is the cartesian state 300 seconds since epoch?
+
+    double dt = 300; // what is the cartesian state 300 seconds after the epoch?
     
     OC::CartState cart = kep.convert_to_cart(dt);
     
