@@ -36,6 +36,12 @@ namespace OC{
 		return this -> state;
 	}
 
+	
+	void State::set_state(arma::vec state) {
+		this -> state = state;
+	}
+
+
 	double State::get_mu() const{
 		return this -> mu;
 	}

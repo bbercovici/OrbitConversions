@@ -47,16 +47,50 @@ namespace OC{
 		KepState(arma::vec state,double mu);
 		KepState();
 
+
+		/**
+		Returns orbit energy
+		@return energy (J)
+		*/
 		virtual double get_energy() const;
+
+		/**
+		Returns orbit sma
+		@return sma (m)
+		*/
 		virtual double get_a() const;
+
+
+		/**
+		Returns orbit sma
+		@return sma (m)
+		*/
 		virtual double get_eccentricity() const;
+
+		/**
+		Returns orbit momentum
+		@return orbit momentum (m^2/s)
+		*/
 		virtual double get_momentum() const;
 
 		double get_inclination() const;
 		double get_Omega() const;
 		double get_omega() const;
 		double get_M0() const;
+
+		/**
+		Returns orbit speed 
+		@param true anomaly
+		@return orbit speed (m/s)
+		*/
 		double get_speed(double f) const;
+
+
+		/**
+		Returns orbit radius 
+		@param true anomaly
+		@return orbit radius (m)
+		*/
 		double get_radius(double f) const;
 
 		/* 
@@ -68,6 +102,7 @@ namespace OC{
 
 		CartState convert_to_cart(double delta_T) const;
 
+		
 	protected:
 
 	};
