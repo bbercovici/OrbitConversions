@@ -152,7 +152,7 @@ namespace OC{
 				std::cout << "decc : " << decc<<  " , ecc : " <<  ecc << " , Residual : " <<  error << std::endl;
 			}
 
-			if (error < 1e-13 || std::abs(decc) < 1e-12){
+			if (error < 1e-13 || std::abs(decc) < 1e-12 || std::abs(ecc) < 1e-10){
 				converge = true;
 			}
 			
