@@ -20,8 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "CartState.hpp"
-#include <RigidBodyKinematics.hpp>
+#include "OrbitConversions/CartState.hpp"
 
 namespace OC{
 
@@ -110,8 +109,18 @@ namespace OC{
 		double i = std::acos(ON(2,2));
 		double omega = std::atan2(ON(0,2),ON(1,2));
 
-		double f = std::acos(1./e * (p / this -> get_radius() - 1));
 
+		double cos_e = 1./e * (p / this -> get_radius() - 1);
+		double f;
+		if (std::abs(cos_e - 1) < 1e-10){
+			f = 0;
+		}
+		else if (std::abs(cos_e + 1) < 1e-10){
+			f = arma::datum::pi;
+		}
+		else{
+			f = std::acos(cos_e);
+		}
 
 
 
@@ -123,6 +132,8 @@ namespace OC{
 		if (e < 1){
         // eccentric anomaly
 			ecc = State::ecc_from_f(f,e);
+
+
 
         // mean anomaly
 			M = ecc - e * std::sin(ecc);
