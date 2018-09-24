@@ -37,7 +37,7 @@ OrbitConversions can be retrieved from Homebrew:
     
 ## Usage
 
-Remember that the classical Keplerian elements are singular at zero eccentricity and inclinations!
+Remember that the classical Keplerian elements are singular at zero eccentricity and inclination!
 
 ### From Cartesian coordinates to Keplerian elements
     

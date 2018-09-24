@@ -36,13 +36,6 @@
 
 cmake_minimum_required(VERSION 2.8)
 
-if (${USE_GCC})
-	include(cmake/FindOmpGcc.cmake)
-else()
-	set(CMAKE_C_COMPILER /usr/bin/gcc CACHE STRING "C Compiler" FORCE)
-	set(CMAKE_CXX_COMPILER /usr/bin/g++ CACHE STRING "C++ Compiler" FORCE)
-endif()
-
 get_filename_component(dirName ${CMAKE_CURRENT_SOURCE_DIR} NAME)
 set(LIB_NAME "OrbitConversions" CACHE STRING "Name of library to be created.")
 
@@ -87,6 +80,7 @@ include_directories(${RBK_INCLUDE_DIR})
 set(library_dependencies
 	${ARMADILLO_LIBRARIES}
 	${RBK_LIBRARY})
+
 target_link_libraries(${LIB_NAME} ${library_dependencies})
 
 
