@@ -121,7 +121,6 @@ namespace OC{
 
 	double State::ecc_from_M(const double & M,const double & e,const bool & pedantic){
 
-		bool converge = false;
 		double ecc = M;
 
 		if (pedantic){
@@ -129,7 +128,7 @@ namespace OC{
 
 		}
 
-		while (!converge){
+		for (unsigned int i = 0; i < 1000; ++i){
 
 			double max_decc = 0.1;
 
@@ -153,7 +152,11 @@ namespace OC{
 			}
 
 			if (error < 1e-13 || std::abs(decc) < 1e-12 || std::abs(ecc) < 1e-10){
-				converge = true;
+				break;
+			}
+
+			if (i == 999){
+				std::cout << "State::ecc_from_M did not converge\n";
 			}
 			
 		}
@@ -165,14 +168,14 @@ namespace OC{
 
 	double State::H_from_M(const  double & M,const  double & e,const bool & pedantic){
 
-		bool converge = false;
-
 		double H = std::atan(M);
+		
 		double damp = 1;
 		if (pedantic){
 			std::cout << "Initial guess: " << H << " from M : " << M <<  " , e: " << e << std::endl;
 		}
-		while (!converge){
+
+		for (unsigned int i = 0; i < 1000; ++i){
 
 			double max_dH = 0.1;
 
@@ -198,7 +201,11 @@ namespace OC{
 
 
 			if (error < 1e-13 || std::abs(dH) < 1e-12){
-				converge = true;
+				break;
+			}
+
+			if (i == 999){
+				std::cout << "State::H_from_M did not converge\n";
 			}
 
 			
