@@ -56,7 +56,7 @@ add_library(${LIB_NAME} SHARED
 
 target_link_libraries(${LIB_NAME} ${ARMADILLO_LIBRARIES} ${RBK_LIBRARY})
 
-file(GLOB includes include/*.hpp)
+file(GLOB includes include/OrbitConversions/*.hpp)
 
 # Installing
 if(${IS_FORTUNA})
