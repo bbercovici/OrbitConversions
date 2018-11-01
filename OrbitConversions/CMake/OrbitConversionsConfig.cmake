@@ -20,7 +20,7 @@
 # SOFTWARE.
 #
 if (EXISTS /home/bebe0705/.am_fortuna)
-	set(OC_INCLUDE_DIR /home/bebe0705/libs/local/include/OrbitConversions)
+	set(OC_INCLUDE_DIR /home/bebe0705/libs/local/include/)
 	set(OC_LIBRARY /home/bebe0705/libs/local/lib/libOrbitConversions.so)
 else()
 
