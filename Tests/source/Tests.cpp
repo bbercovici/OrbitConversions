@@ -22,7 +22,7 @@
 
 #include "Tests.hpp"
 #include <RigidBodyKinematics.hpp>
-#include <OrbitConversions.hpp>
+#include <OrbitConversions/OrbitConversions.hpp>
 #include <cassert>
 
 namespace Tests{
